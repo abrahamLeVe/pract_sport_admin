@@ -4,6 +4,7 @@ import { PlusIcon } from "lucide-react";
 
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
+import { SiteHeader } from "@/components/site-header";
 import {
   Card,
   CardContent,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// 1. Definición estricta del tipo de datos para TypeScript
 export type Usuario = {
   id: string;
   name: string;
@@ -22,7 +22,6 @@ export type Usuario = {
   status: "activo" | "inactivo";
 };
 
-// 2. Datos ficticios (Mock Data) provisionales para probar el diseño
 const usuariosMock: Usuario[] = [
   {
     id: "1",
@@ -47,16 +46,9 @@ const usuariosMock: Usuario[] = [
   },
 ];
 
-// 3. Configuración de las columnas requeridas por el DataTable de Shadcn
 const columns = [
-  {
-    accessorKey: "name",
-    header: "Nombre Completo",
-  },
-  {
-    accessorKey: "email",
-    header: "Correo Electrónico",
-  },
+  { accessorKey: "name", header: "Nombre Completo" },
+  { accessorKey: "email", header: "Correo Electrónico" },
   {
     accessorKey: "role",
     header: "Rol",
@@ -93,45 +85,46 @@ const columns = [
     cell: ({ row }: any) => {
       const usuario = row.original;
       return (
-        <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" asChild>
-            <Link href={`/dashboard/usuarios/${usuario.id}`}>Editar</Link>
-          </Button>
-        </div>
+        <Button size="sm" variant="outline" asChild>
+          <Link href={`/dashboard/users/${usuario.id}`}>Editar</Link>
+        </Button>
       );
     },
   },
 ];
 
-// 4. Componente Principal (Server Component por defecto)
 export default function UsuariosPage() {
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Usuarios</h2>
-        <div className="flex items-center space-x-2">
-          {/* Botón que apunta a la subcarpeta 'nuevo' para registrar */}
-          <Button asChild>
-            <Link href="/dashboard/usuarios/nuevo">
-              <PlusIcon className="mr-2 h-4 w-4" />
-              Nuevo Usuario
-            </Link>
-          </Button>
+    <>
+      <SiteHeader />
+      <div className="flex flex-1 flex-col">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-6">
+            <div className="flex items-center justify-between space-y-2">
+              <h2 className="text-3xl font-bold tracking-tight">Usuarios</h2>
+              <Button asChild>
+                <Link href="/dashboard/users/nuevo">
+                  <PlusIcon className="mr-2 h-4 w-4" />
+                  Nuevo Usuario
+                </Link>
+              </Button>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Listado General</CardTitle>
+                <CardDescription>
+                  Gestiona los accesos, roles y estados de los usuarios del
+                  sistema.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* <DataTable columns={columns} data={usuariosMock} /> */}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Listado General</CardTitle>
-          <CardDescription>
-            Gestiona los accesos, roles y estados de los usuarios del sistema.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Inyectamos el DataTable de tu repositorio pasándole columnas y filas */}
-          {/* <DataTable columns={columns} data={usuariosMock} />} */}
-        </CardContent>
-      </Card>
-    </div>
+    </>
   );
 }
