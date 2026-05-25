@@ -1,3 +1,6 @@
+-- Limpieza inicial: Borra todo en orden jerárquico inverso para que no se atranquen las llaves foráneas
+DROP TABLE IF EXISTS galeria_torneos, inscripciones, productos, competencias, usuarios CASCADE;
+
 -- =======================================================
 -- 1. EXTENSIONES Y SEGURIDAD
 -- =======================================================
@@ -11,9 +14,14 @@ CREATE TABLE IF NOT EXISTS usuarios (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(30) NOT NULL DEFAULT 'user',      -- 'admin', 'moderator', 'user'
-    status VARCHAR(20) NOT NULL DEFAULT 'activo',   -- 'activo', 'inactivo'
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    role VARCHAR(30) NOT NULL DEFAULT 'user',
+    status VARCHAR(20) NOT NULL DEFAULT 'activo',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- 🛡️ CAMPOS DE AUDITORÍA
+    created_by INT REFERENCES usuarios(id) ON DELETE SET NULL, -- 👈 ¡AÑADIDO! Quién lo registró
+    updated_at TIMESTAMP WITH TIME ZONE,
+    updated_by INT REFERENCES usuarios(id) ON DELETE SET NULL
 );
 
 -- =======================================================
@@ -26,7 +34,11 @@ CREATE TABLE IF NOT EXISTS competencias (
     fecha_evento DATE NOT NULL,
     precio_inscripcion DECIMAL(10, 2) NOT NULL,     -- Costo en Soles (PEN)
     status VARCHAR(20) NOT NULL DEFAULT 'abierto',  -- 'abierto', 'finalizado', 'oculto'
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Campos de Auditoría
+    updated_at TIMESTAMP WITH TIME ZONE,
+    updated_by INT REFERENCES usuarios(id) ON DELETE SET NULL
 );
 
 -- =======================================================
@@ -41,7 +53,11 @@ CREATE TABLE IF NOT EXISTS inscripciones (
     monto_pagado DECIMAL(10, 2) NOT NULL,
     url_comprobante VARCHAR(255) NOT NULL,         -- URL de la captura subida (Yape/Plin)
     status_pago VARCHAR(20) NOT NULL DEFAULT 'pendiente', -- 'pendiente', 'verificado', 'rechazado'
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Campos de Auditoría CRÍTICOS
+    updated_at TIMESTAMP WITH TIME ZONE,
+    updated_by INT REFERENCES usuarios(id) ON DELETE SET NULL
 );
 
 -- =======================================================
@@ -54,7 +70,11 @@ CREATE TABLE IF NOT EXISTS productos (
     precio DECIMAL(10, 2) NOT NULL,
     stock INT NOT NULL DEFAULT 0,
     url_imagen VARCHAR(255),                       -- Foto del suplemento
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Campos de Auditoría
+    updated_at TIMESTAMP WITH TIME ZONE,
+    updated_by INT REFERENCES usuarios(id) ON DELETE SET NULL
 );
 
 -- =======================================================
@@ -65,5 +85,9 @@ CREATE TABLE IF NOT EXISTS galeria_torneos (
     competencia_id INT REFERENCES competencias(id) ON DELETE SET NULL,
     url_imagen VARCHAR(255) NOT NULL,              -- URL de la foto en la nube
     titulo VARCHAR(100),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Campos de Auditoría
+    updated_at TIMESTAMP WITH TIME ZONE,
+    updated_by INT REFERENCES usuarios(id) ON DELETE SET NULL
 );

@@ -46,7 +46,6 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              {/* 2. Añadimos 'asChild' para que adopte el comportamiento del Link que va adentro */}
               <SidebarMenuButton asChild tooltip={item.title}>
                 <Link href={item.url}>
                   {item.icon}

@@ -16,12 +16,13 @@ export async function crearUsuarioEnDb(
   email: string,
   passwordHash: string,
   role: string,
+  created_by: number | null, // 👈 Recibe el ID del administrador
 ) {
-  // Si desde el formulario de administración pasas el rol, se guardará ese (admin/moderator).
-  // Si en el futuro haces un formulario público y no envías el parámetro 'role', la DB le pondrá 'user' automáticamente.
   const res = await query(
-    "INSERT INTO usuarios (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role",
-    [name, email, passwordHash, role],
+    `INSERT INTO usuarios (name, email, password, role, created_by) 
+     VALUES ($1, $2, $3, $4, $5) 
+     RETURNING id, name, email, role`,
+    [name, email, passwordHash, role, created_by],
   );
   return res.rows[0];
 }

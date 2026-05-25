@@ -86,7 +86,7 @@ const columns = [
       const usuario = row.original;
       return (
         <Button size="sm" variant="outline" asChild>
-          <Link href={`/dashboard/users/${usuario.id}`}>Editar</Link>
+          <Link href={`/dashboard/usuarios/${usuario.id}`}>Editar</Link>
         </Button>
       );
     },
@@ -103,7 +103,7 @@ export default function UsuariosPage() {
             <div className="flex items-center justify-between space-y-2">
               <h2 className="text-3xl font-bold tracking-tight">Usuarios</h2>
               <Button asChild>
-                <Link href="/dashboard/users/nuevo">
+                <Link href="/dashboard/usuarios/nuevo">
                   <PlusIcon className="mr-2 h-4 w-4" />
                   Nuevo Usuario
                 </Link>
