@@ -2,9 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ArrowLeftIcon, Loader2Icon } from "lucide-react";
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,17 +26,11 @@ import { registrarUsuarioAction } from "@/app/actions/usuarios";
 import { SiteHeader } from "@/components/site-header";
 
 export default function NuevoUsuarioPage() {
-  const router = useRouter();
+  //useActionState maneja el flujo nativo del servidor sin usar useEffect
   const [state, formAction, isPending] = useActionState(
     registrarUsuarioAction,
     null,
   );
-
-  useEffect(() => {
-    if (state?.success) {
-      router.push("/dashboard/usuarios");
-    }
-  }, [state, router]);
 
   return (
     <>
@@ -46,7 +39,7 @@ export default function NuevoUsuarioPage() {
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-6 max-w-2xl mx-auto w-full">
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="ghost" size="sm" asChild disabled={isPending}>
                 <Link href="/dashboard/usuarios">
                   <ArrowLeftIcon className="mr-2 h-4 w-4" />
                   Volver al listado
@@ -72,7 +65,7 @@ export default function NuevoUsuarioPage() {
                       name="name"
                       placeholder="Ej. Juan Pérez"
                       disabled={isPending}
-                      defaultValue={state?.fields?.name?.value || ""} // <-- Toma el valor del estado si existe
+                      defaultValue={state?.fields?.name?.value || ""}
                       autoComplete="name"
                     />
                     {state?.fields?.name?.message && (
@@ -91,7 +84,7 @@ export default function NuevoUsuarioPage() {
                       type="email"
                       placeholder="juan@inkateam.com"
                       disabled={isPending}
-                      defaultValue={state?.fields?.email?.value || ""} // <-- Toma el valor del estado si existe
+                      defaultValue={state?.fields?.email?.value || ""}
                       autoComplete="email"
                     />
                     {state?.fields?.email?.message && (
@@ -110,7 +103,7 @@ export default function NuevoUsuarioPage() {
                       type="password"
                       placeholder="••••••••"
                       disabled={isPending}
-                      defaultValue={state?.fields?.password?.value || ""} // <-- Toma el valor del estado si existe
+                      defaultValue={state?.fields?.password?.value || ""}
                     />
                     {state?.fields?.password?.message && (
                       <p className="text-xs font-medium text-destructive">
@@ -124,7 +117,7 @@ export default function NuevoUsuarioPage() {
                     <Label htmlFor="role">Rol / Permisos del Sistema</Label>
                     <Select
                       name="role"
-                      key={state?.fields?.role?.value || "user"} // El key ayuda a forzar el re-render del Select si cambia el estado
+                      key={state?.fields?.role?.value || "user"}
                       defaultValue={state?.fields?.role?.value || "user"}
                       disabled={isPending}
                     >
@@ -150,6 +143,7 @@ export default function NuevoUsuarioPage() {
                     )}
                   </div>
 
+                  {/* Error global */}
                   {state?.error && (
                     <div className="p-3 bg-destructive/10 text-destructive rounded-md text-sm font-medium">
                       {state.error}
@@ -165,19 +159,21 @@ export default function NuevoUsuarioPage() {
                     >
                       <Link href="/dashboard/usuarios">Cancelar</Link>
                     </Button>
+
+                    {/* 🛠️ BOTÓN OPTIMIZADO: Mantiene el spinner continuo */}
                     <Button
                       type="submit"
                       disabled={isPending}
-                      className="relative min-w-35" // 'min-w' opcional para que el botón no encoja al ocultar el texto
+                      className="min-w-35 flex items-center justify-center gap-2"
                     >
-                      {isPending && (
-                        <div className="absolute inset-0 flex items-center justify-center">
+                      {isPending ? (
+                        <>
                           <Loader2Icon className="h-4 w-4 animate-spin" />
-                        </div>
+                          <span>Guardando...</span>
+                        </>
+                      ) : (
+                        <span>Guardar Usuario</span>
                       )}
-                      <span className={isPending ? "text-transparent" : ""}>
-                        Guardar Usuario
-                      </span>
                     </Button>
                   </div>
                 </form>

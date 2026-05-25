@@ -16,7 +16,7 @@ interface PageProps {
 }
 
 export default function Home({ className }: PageProps) {
-  // useActionState engancha el ciclo de vida del Server Action de forma reactiva
+  // 🚀 Volvemos al hook nativo: Cero useState, cero código redundante
   const [state, formAction, isPending] = useActionState(
     loginUsuarioAction,
     null,
@@ -28,7 +28,7 @@ export default function Home({ className }: PageProps) {
         <div className={cn("flex flex-col gap-6 w-full", className)}>
           <Card className="overflow-hidden p-0 border-0 shadow-none">
             <CardContent className="grid p-0 md:grid-cols-2">
-              {/* Formulario de Autenticación */}
+              {/* 🛡️ Formulario Nativo usando directamente formAction */}
               <form
                 action={formAction}
                 className="p-6 md:p-10 flex flex-col justify-center"
@@ -80,14 +80,14 @@ export default function Home({ className }: PageProps) {
                     )}
                   </div>
 
-                  {/* Mensaje de error global */}
+                  {/* Mensaje de error global controlado por el Server Action */}
                   {state?.error && (
                     <div className="p-3 bg-destructive/10 text-destructive rounded-md text-sm font-medium">
                       {state.error}
                     </div>
                   )}
 
-                  {/* 🛠️ BOTÓN OPTIMIZADO: Transición limpia y fluida sin parpadeos */}
+                  {/* 🎯 BOTÓN MINIMALISTA: isPending controla el flujo continuo sin saltos */}
                   <Button
                     type="submit"
                     className="w-full flex items-center justify-center gap-2"
@@ -105,7 +105,7 @@ export default function Home({ className }: PageProps) {
                 </div>
               </form>
 
-              {/* Imagen Lateral */}
+              {/* Imagen Lateral de la Academia */}
               <div className="relative hidden bg-muted md:block h-full min-h-125">
                 <img
                   src="/placeholder.png"

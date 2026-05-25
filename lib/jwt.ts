@@ -14,7 +14,7 @@ export interface TokenPayload {
 
 // ⏱️ Access Token: Corta duración (ej: 15 minutos) por seguridad
 export function generarAccessToken(payload: TokenPayload): string {
-  return jwt.sign(payload, ACCESS_SECRET, { expiresIn: "15m" });
+  return jwt.sign(payload, ACCESS_SECRET, { expiresIn: "10s" });
 }
 
 // ⏳ Refresh Token: Larga duración (ej: 7 días) para que el celular no pida login a cada rato
