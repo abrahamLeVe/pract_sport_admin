@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 
 // 🛠️ Importamos la acción de logout desde tu backend
-import { logoutUsuarioAction } from "@/app/actions/usuarios";
+// import { logoutUsuarioAction } from "@/app/actions/usuarios";
 
 export function NavUser({
   user,
@@ -39,13 +39,13 @@ export function NavUser({
   const { isMobile } = useSidebar();
 
   // Función manejadora del click para el cierre de sesión
-  const handleLogout = async () => {
-    try {
-      await logoutUsuarioAction();
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     await logoutUsuarioAction();
+  //   } catch (error) {
+  //     console.error("Error al cerrar sesión:", error);
+  //   }
+  // };
 
   return (
     <SidebarMenu>
@@ -108,7 +108,7 @@ export function NavUser({
 
             {/* 🛠️ SOLUCIÓN: Agregamos el disparador onClick con la acción nativa */}
             <DropdownMenuItem
-              onClick={handleLogout}
+              //onClick={handleLogout}
               className="text-destructive focus:text-destructive cursor-pointer"
             >
               <LogOutIcon />

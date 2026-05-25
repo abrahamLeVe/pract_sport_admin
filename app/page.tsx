@@ -16,6 +16,7 @@ interface PageProps {
 }
 
 export default function Home({ className }: PageProps) {
+  // useActionState engancha el ciclo de vida del Server Action de forma reactiva
   const [state, formAction, isPending] = useActionState(
     loginUsuarioAction,
     null,
@@ -64,9 +65,7 @@ export default function Home({ className }: PageProps) {
 
                   {/* Campo: Password */}
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password">Contraseña</Label>
-                    </div>
+                    <Label htmlFor="password">Contraseña</Label>
                     <Input
                       id="password"
                       name="password"
@@ -81,32 +80,32 @@ export default function Home({ className }: PageProps) {
                     )}
                   </div>
 
-                  {/* Mensaje de error global si rebota en la DB */}
+                  {/* Mensaje de error global */}
                   {state?.error && (
                     <div className="p-3 bg-destructive/10 text-destructive rounded-md text-sm font-medium">
                       {state.error}
                     </div>
                   )}
 
-                  {/* Botón de Envío con Centrado de Loader */}
+                  {/* 🛠️ BOTÓN OPTIMIZADO: Transición limpia y fluida sin parpadeos */}
                   <Button
                     type="submit"
-                    className="w-full relative"
+                    className="w-full flex items-center justify-center gap-2"
                     disabled={isPending}
                   >
-                    {isPending && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-primary rounded-md">
-                        <Loader2Icon className="h-4 w-4 animate-spin text-primary-foreground" />
-                      </div>
+                    {isPending ? (
+                      <>
+                        <Loader2Icon className="h-4 w-4 animate-spin" />
+                        <span>Autenticando...</span>
+                      </>
+                    ) : (
+                      <span>Iniciar Sesión</span>
                     )}
-                    <span className={isPending ? "text-transparent" : ""}>
-                      Iniciar Sesión
-                    </span>
                   </Button>
                 </div>
               </form>
 
-              {/* Imagen Lateral de la Academia */}
+              {/* Imagen Lateral */}
               <div className="relative hidden bg-muted md:block h-full min-h-125">
                 <img
                   src="/placeholder.png"

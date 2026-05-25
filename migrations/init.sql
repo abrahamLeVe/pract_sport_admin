@@ -5,21 +5,27 @@ DROP TABLE IF EXISTS galeria_torneos, inscripciones, productos, competencias, us
 -- 1. EXTENSIONES Y SEGURIDAD
 -- =======================================================
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pgcrypto; -- 🔐 Necesario para cifrar de forma nativa en la base de datos
 
 -- =======================================================
 -- 2. USUARIOS Y ROLES (Admins, Competidores, Clientes)
 -- =======================================================
+-- Tabla de Usuarios con soporte para Sesiones API Móvil/Web
 CREATE TABLE IF NOT EXISTS usuarios (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(30) NOT NULL DEFAULT 'user',
-    status VARCHAR(20) NOT NULL DEFAULT 'activo',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    role VARCHAR(30) NOT NULL DEFAULT 'user',            -- 'admin', 'moderator', 'user'
+    status VARCHAR(20) NOT NULL DEFAULT 'activo',         -- 'activo', 'inactivo', 'suspendido'
     
-    -- 🛡️ CAMPOS DE AUDITORÍA
-    created_by INT REFERENCES usuarios(id) ON DELETE SET NULL, -- 👈 ¡AÑADIDO! Quién lo registró
+    -- 🔐 Sistema de tokens para App Móvil y Cliente Web
+    refresh_token TEXT,                                   -- Guarda el token de refresco actual
+    refresh_token_expires_at TIMESTAMP WITH TIME ZONE,    -- Expiración del refresh token
+    
+    -- 🛡️ Auditoría
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by INT REFERENCES usuarios(id) ON DELETE SET NULL,
     updated_at TIMESTAMP WITH TIME ZONE,
     updated_by INT REFERENCES usuarios(id) ON DELETE SET NULL
 );
@@ -91,3 +97,22 @@ CREATE TABLE IF NOT EXISTS galeria_torneos (
     updated_at TIMESTAMP WITH TIME ZONE,
     updated_by INT REFERENCES usuarios(id) ON DELETE SET NULL
 );
+
+-- =======================================================
+-- 7. INSERCIÓN DE ADMINISTRADOR SEMILLA (SEED)
+-- =======================================================
+-- Registra directamente al usuario con ID 3 y contraseña nativa 'admin123' de forma segura
+INSERT INTO usuarios (id, name, email, password, role, status, created_by)
+VALUES (
+    3, 
+    'Administrador Inka Team', 
+    'admin@inkateam.com', 
+    crypt('admin123', gen_salt('bf', 10)), -- Cifrado nativo compatible con tu backend
+    'admin', 
+    'activo', 
+    NULL
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- Sincroniza la secuencia de IDs de la tabla para evitar colisiones en los próximos registros
+SELECT setval('usuarios_id_seq', (SELECT MAX(id) FROM usuarios));
